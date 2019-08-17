@@ -1,0 +1,17 @@
+- name: Deploy docker containers
+  gather_facts: false
+  become: true
+  hosts: new
+  vars_files:
+    - vars/main.yml
+  vars:
+    - flask_app_image: alistarle/gunicorn_flask_app
+    - token: s.pNPT9Pu1df4J8HziXl66KmbD
+    - app_name: gunicorn_flask_app
+    - region: eu-fr-paris
+    - env: PRD
+  roles: 
+    - bootstrap
+    - flask
+    - fluentd
+    - traefik

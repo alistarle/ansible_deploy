@@ -1,0 +1,14 @@
+node_config_directory: /etc/ccs
+log_directory: /var/log
+
+enable_traefik: yes
+enable_fluentd: yes
+enable_prometheus_exporter: yes
+
+enable_prometheus_node_exporter: "{{ enable_prometheus_exporter }}"
+enable_prometheus_fluentd_exporter: "{{ enable_prometheus_exporter }}"
+
+traefik_image: traefik
+fluentd_image: fluent/fluentd:edge
+prometheus_node_exporter_image: prom/node-exporter
+prometheus_fluentd_exporter_image: vect0r/fluentd_exporter

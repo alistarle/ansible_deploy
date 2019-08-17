@@ -1,0 +1,6 @@
+docker_image_to_pull:
+  - "{{ flask_app_image }}"
+  - "{% if enable_traefik | bool %}{{ traefik_image }}{% endif %}"
+  - "{% if enable_fluentd | bool %}{{ fluentd_image }}{% endif %}"
+  - "{% if enable_prometheus_node_exporter | bool %}{{ prometheus_node_exporter_image }}{% endif %}"
+  - "{% if enable_prometheus_fluentd_exporter | bool %}{{ prometheus_fluentd_exporter_image }}{% endif %}"

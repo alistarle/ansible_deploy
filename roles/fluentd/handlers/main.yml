@@ -1,0 +1,6 @@
+- name: Restart fluentd container
+  docker_container:
+    name: "fluentd_exporter"
+    image: "{{ prometheus_fluentd_exporter_image }}"
+    network_mode: host
+    restart: yes

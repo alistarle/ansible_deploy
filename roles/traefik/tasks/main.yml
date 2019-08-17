@@ -1,0 +1,39 @@
+- name: Create traefik config directory
+  file:
+    state: directory
+    path: "{{ node_config_directory }}/traefik/{{ item }}"
+  with_items:
+  - ssl
+
+- name: Create traefik log directory
+  file:
+    state: directory
+    path: "{{ log_directory }}/traefik"
+
+- name: Retrieve SSL Certificates
+  copy:
+    content: "toto"
+    dest: "{{ node_config_directory }}/traefik/ssl/certificate.crt"
+  notify: Restart traefik container
+
+- name: Retrieve SSL Private key
+  copy:
+    content: "toto"
+    dest: "{{ node_config_directory }}/traefik/ssl/certificate.key"
+  notify: Restart traefik container
+
+- name: Template traefik configuration file
+  template:
+    src: "traefik.toml.j2"
+    dest: "{{ node_config_directory }}/traefik/traefik.toml"
+  notify: Restart traefik container
+
+- name: Create traefik container
+  docker_container:
+    name: "traefik"
+    image: "{{ traefik_image }}"
+    network_mode: host
+    volumes:
+      - "{{ node_config_directory }}/traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - "{{ node_config_directory }}/traefik/ssl:/etc/traefik/ssl"
+      - "{{ log_directory }}:/var/log"

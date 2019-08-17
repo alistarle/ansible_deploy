@@ -1,0 +1,36 @@
+- name: Create nginx config directory
+  file:
+    state: directory
+    path: "{{ node_config_directory }}/nginx/{{ item }}"
+  with_items:
+  - ssl
+
+- name: Retrieve SSL Certificates
+  copy:
+    content: "toto"
+    dest: "{{ node_config_directory }}/nginx/ssl/certificate.crt"
+
+- name: Retrieve SSL Private key
+  copy:
+    content: "toto"
+    dest: "{{ node_config_directory }}/nginx/ssl/certificate.key"
+
+- name: Copy nginx configuration file
+  copy:
+    src: "default.conf"
+    dest: "{{ node_config_directory }}/nginx/default.conf"
+
+- name: Create nginx container
+  docker_container:
+    name: "nginx"
+    image: "{{ nginx_image }}"
+    network_mode: host
+    volumes:
+      - "{{ node_config_directory }}/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+
+- name: Create nginx_exporter container
+  docker_container:
+    name: "nginx_exporter"
+    image: "{{ prometheus_nginx_exporter_image }}"
+    network_mode: host
+  when: enable_prometheus_nginx_exporter | bool

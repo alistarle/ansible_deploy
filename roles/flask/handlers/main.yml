@@ -1,0 +1,6 @@
+- name: Restart flask container
+  docker_container:
+    name: "{{ app_name }}"
+    image: "{{ flask_app_image }}"
+    network_mode: host
+    restart: yes

@@ -1,0 +1,36 @@
+- name: retrieve vault token
+  set_fact:
+    vault_token: "{{ token }}" 
+
+- name: Create flask_app log directory
+  file:
+    state: directory
+    path: "{{ log_directory }}/app"
+
+- name: Template gunicorn configuration file
+  template:
+    src: "gunicorn_conf.py.j2"
+    dest: "{{ node_config_directory }}/gunicorn_conf.py"
+  notify: Restart flask container
+
+- name: Create flask_app container
+  docker_container:
+    name: "{{ app_name }}"
+    image: "{{ flask_app_image }}"
+    network_mode: host
+    env:
+      FLASK_APP_NAME: "{{ app_name }}"
+      FLASK_REGION: "{{ region }}"
+      FLASK_ENV: "{{ env }}"
+      VAULT_TOKEN_FOR_DYNACONF: "{{ vault_token }}"
+    volumes:
+      - "{{ log_directory }}:/var/log"
+      - "{{ node_config_directory }}/gunicorn_conf.py:/app/gunicorn_conf.py"
+
+- name: Create node_exporter container
+  docker_container:
+    name: "node_exporter"
+    image: "{{ prometheus_node_exporter_image }}"
+    network_mode: host
+    restart_policy: always
+  when: enable_prometheus_node_exporter | bool
